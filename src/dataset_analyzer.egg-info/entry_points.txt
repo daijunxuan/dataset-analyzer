@@ -1,0 +1,2 @@
+[console_scripts]
+dataset-analyzer = dataset_analyzer.cli:main
