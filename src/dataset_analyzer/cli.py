@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from dataset_analyzer.analyzer import load_csv
+from dataset_analyzer.analyzer import analyze_data, load_csv
 
 
 def main() -> None:
@@ -8,7 +8,9 @@ def main() -> None:
 
     data = load_csv(file_path)
 
-    print(data)
+    report = analyze_data(data)
+
+    print(report)
 
 
 if __name__ == "__main__":
