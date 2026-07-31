@@ -12,7 +12,8 @@ def save_report(
     report_dict = {
         "rows": report.rows,
         "columns": report.columns,
-        "missing_values": report.missing_values
+        "missing_values": report.missing_values,
+        "numeric_summary": report.numeric_summary
     }
 
     with open(output_path, "w") as file:

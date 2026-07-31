@@ -13,5 +13,6 @@ def analyze_data(data: pd.DataFrame) -> AnalysisReport:
     return AnalysisReport(
         rows=len(data),
         columns=len(data.columns),
-        missing_values=int(data.isnull().sum().sum())
+        missing_values=int(data.isnull().sum().sum()),
+        numeric_summary=data.mean(numeric_only=True).to_dict()
     )

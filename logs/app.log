@@ -8,3 +8,8 @@
 2026-07-31 15:19:07,350 INFO Dataset loaded: 3 rows
 2026-07-31 15:19:07,352 INFO Analysis completed
 2026-07-31 15:19:07,353 INFO Report saved
+2026-07-31 15:22:24,054 INFO Starting dataset analysis
+2026-07-31 15:22:24,054 INFO Loading CSV file
+2026-07-31 15:22:24,059 INFO Dataset loaded: 3 rows
+2026-07-31 15:22:24,062 INFO Analysis completed
+2026-07-31 15:22:24,062 INFO Report saved
