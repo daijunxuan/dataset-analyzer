@@ -1,0 +1,8 @@
+data:
+  input_file: data/sample.csv
+
+output:
+  report_file: reports/report.json
+
+logging:
+  log_file: logs/app.log

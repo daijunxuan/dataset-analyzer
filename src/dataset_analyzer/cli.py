@@ -4,7 +4,7 @@ import logging
 from dataset_analyzer.analyzer import analyze_data, load_csv
 from dataset_analyzer.logging_config import setup_logging
 from dataset_analyzer.reporter import save_report
-
+from dataset_analyzer.config import load_config
 
 def main() -> None:
 
@@ -12,9 +12,15 @@ def main() -> None:
 
     logging.info("Starting dataset analysis")
 
-    file_path = Path("data/sample.csv")
-
-    output_path = Path("reports/report.json")
+    config = load_config(
+    Path("configs/config.yaml")
+)
+    file_path = Path(
+    config["data"]["input_file"]
+)
+    output_path = Path(
+    config["output"]["report_file"]
+)
 
     logging.info("Loading CSV file")
 
