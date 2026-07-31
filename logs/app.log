@@ -1,0 +1,5 @@
+2026-07-31 15:11:52,704 INFO Starting dataset analysis
+2026-07-31 15:11:52,704 INFO Loading CSV file
+2026-07-31 15:11:52,708 INFO Dataset loaded: 3 rows
+2026-07-31 15:11:52,709 INFO Analysis completed
+2026-07-31 15:11:52,710 INFO Report saved
