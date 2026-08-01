@@ -1,7 +1,0 @@
-Metadata-Version: 2.4
-Name: dataset-analyzer
-Version: 0.1.0
-Summary: A command line dataset analysis tool
-Requires-Python: >=3.11
-Requires-Dist: pandas
-Requires-Dist: pytest
