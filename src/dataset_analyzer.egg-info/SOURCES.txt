@@ -14,3 +14,4 @@ src/dataset_analyzer.egg-info/entry_points.txt
 src/dataset_analyzer.egg-info/requires.txt
 src/dataset_analyzer.egg-info/top_level.txt
 tests/test_analyzer.py
+tests/test_cli.py
