@@ -10,7 +10,7 @@ description = "A command line dataset analysis tool"
 requires-python = ">=3.11"
 dependencies = [
     "pandas",
-    "pytest"
+    "pytest",
     "pyyaml",
 ]
 
