@@ -28,8 +28,6 @@ dataset-analyzer/
 │   └── config.yaml
 ├── data/
 │   └── sample.csv
-├── logs/
-│   └── app.log
 ├── reports/
 │   └── report.json
 ├── src/
@@ -214,23 +212,35 @@ The report contains:
 
 ## Logging
 
-The application records its execution process in:
+The project includes a configurable logging system to track the execution process.
+
+The logging configuration is implemented in:
 
 ```text
-logs/app.log
+src/dataset_analyzer/logging_config.py
 ```
 
-Example log entries:
+The application records important execution events, including:
+
+- Starting dataset analysis
+- Loading input files
+- Dataset loading status
+- Analysis completion
+- Report generation
+
+Example log messages:
 
 ```text
-2026-08-01 18:00:00 INFO Starting dataset analysis
-2026-08-01 18:00:00 INFO Loading CSV file
-2026-08-01 18:00:00 INFO Dataset loaded: 3 rows
-2026-08-01 18:00:00 INFO Analysis completed
-2026-08-01 18:00:00 INFO Report saved
+INFO Starting dataset analysis
+INFO Loading CSV file
+INFO Dataset loaded: 100 rows
+INFO Analysis completed
+INFO Report saved
 ```
 
-Log files are generated locally and are excluded from Git version control.
+Logging behavior can be customized through the logging configuration module.
+
+Generated runtime files are excluded from Git version control through `.gitignore`.
 
 ## Testing
 
