@@ -1,4 +1,5 @@
 from pathlib import Path
+import math
 
 import pandas as pd
 
@@ -14,5 +15,8 @@ def analyze_data(data: pd.DataFrame) -> AnalysisReport:
         rows=len(data),
         columns=len(data.columns),
         missing_values=int(data.isnull().sum().sum()),
-        numeric_summary=data.mean(numeric_only=True).to_dict()
+        numeric_summary={
+            name: float(value) if math.isfinite(value) else None
+            for name, value in data.mean(numeric_only=True).items()
+        }
     )

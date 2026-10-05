@@ -16,9 +16,11 @@ def save_report(
         "numeric_summary": report.numeric_summary
     }
 
-    with open(output_path, "w") as file:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as file:
         json.dump(
             report_dict,
             file,
-            indent=4
+            indent=4,
+            allow_nan=False
         )

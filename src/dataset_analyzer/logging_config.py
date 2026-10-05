@@ -2,14 +2,11 @@ import logging
 from pathlib import Path
 
 
-def setup_logging() -> None:
-
-    log_dir = Path("logs")
-
-    log_dir.mkdir(exist_ok=True)
+def setup_logging(log_file: Path = Path("logs/app.log")) -> None:
+    log_file.parent.mkdir(parents=True, exist_ok=True)
 
     logging.basicConfig(
-        filename=log_dir / "app.log",
+        filename=log_file,
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s"
     )

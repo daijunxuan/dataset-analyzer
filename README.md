@@ -2,183 +2,50 @@
 
 [![Tests](https://github.com/daijunxuan/dataset-analyzer/actions/workflows/test.yml/badge.svg)](https://github.com/daijunxuan/dataset-analyzer/actions/workflows/test.yml)
 
-A production-style Python command-line tool for automated CSV dataset analysis, with configurable input and output paths, logging, automated testing, and JSON report generation.
+A Python CLI for CSV inspection: row and column counts, total missing values, numerical means, logging, and portable JSON reports.
 
-## Features
+## Quick start
 
-- Load and analyze CSV datasets
-- Count dataset rows and columns
-- Detect and count missing values
-- Calculate numerical column summaries
-- Export analysis results as JSON
-- Accept custom input and output paths through CLI arguments
-- Use YAML-based configuration management
-- Record application activity through logging
-- Run automated tests with pytest
-- Run continuous integration tests with GitHub Actions
-
-## Project Structure
-
-```text
-dataset-analyzer/
-├── .github/
-│   └── workflows/
-│       └── test.yml
-├── configs/
-│   └── config.yaml
-├── data/
-│   └── sample.csv
-├── reports/
-│   └── report.json
-├── src/
-│   └── dataset_analyzer/
-│       ├── __init__.py
-│       ├── analyzer.py
-│       ├── cli.py
-│       ├── config.py
-│       ├── logging_config.py
-│       ├── models.py
-│       └── reporter.py
-├── tests/
-│   ├── test_analyzer.py
-│   └── test_cli.py
-├── .gitignore
-├── pyproject.toml
-└── README.md
-```
-
-## Requirements
-
-- Python 3.11 or later
-- pandas
-- PyYAML
-- pytest
-
-The required dependencies are declared in `pyproject.toml` and are installed automatically with the project.
-
-## Installation
-
-Clone the repository:
+Python 3.11 or newer:
 
 ```bash
 git clone https://github.com/daijunxuan/dataset-analyzer.git
-```
-
-Enter the project directory:
-
-```bash
 cd dataset-analyzer
-```
-
-Create a virtual environment:
-
-```bash
 python3 -m venv .venv
-```
-
-Activate the virtual environment on macOS or Linux:
-
-```bash
 source .venv/bin/activate
+pip install -e '.[dev]'
+dataset-analyzer --input data/sample.csv --output reports/sample.json
+pytest -q
 ```
 
-Install the project and its dependencies:
+Once installed, the CLI also works outside the checkout:
 
 ```bash
-python -m pip install -e .
+dataset-analyzer --input /path/to/input.csv --output /path/to/results/report.json
 ```
 
-The `-e` option installs the package in editable mode, so changes made inside the `src/` directory are immediately available without reinstalling the project.
+Output directories are created automatically. Success exits with status 0; invalid configuration, missing input, malformed CSV, or a write failure exits with status 1 and an error on stderr. `--help` lists available options.
 
-## Usage
+## Configuration and path rules
 
-### Display help
-
-```bash
-dataset-analyzer --help
-```
-
-Example output:
-
-```text
-usage: dataset-analyzer [-h] [--input INPUT] [--output OUTPUT]
-
-Analyze CSV datasets
-
-options:
-  -h, --help       show this help message and exit
-  --input INPUT    Path to input CSV file
-  --output OUTPUT  Path to output JSON report
-```
-
-### Analyze a CSV file
-
-```bash
-dataset-analyzer --input data/sample.csv
-```
-
-The report will be saved to the default path configured in:
-
-```text
-configs/config.yaml
-```
-
-### Specify a custom output path
-
-```bash
-dataset-analyzer \
-  --input data/sample.csv \
-  --output reports/custom-report.json
-```
-
-### Run with configuration defaults
-
-```bash
-dataset-analyzer
-```
-
-When command-line arguments are not provided, the application reads the input and output paths from `configs/config.yaml`.
-
-## Configuration
-
-The default configuration is stored in:
-
-```text
-configs/config.yaml
-```
-
-Example configuration:
+Use `--config /path/to/config.yaml` to select a YAML file. If omitted, `configs/config.yaml` is loaded only when it exists in the current directory. With neither configuration nor `--input`, the CLI explains what is required.
 
 ```yaml
 data:
-  input_file: data/sample.csv
-
+  input_file: ../data/sample.csv
 output:
-  report_file: reports/report.json
-
+  report_file: ../reports/report.json
 logging:
-  log_file: logs/app.log
+  log_file: ../logs/app.log
 ```
 
-Command-line arguments take priority over values in the configuration file.
+Paths in YAML are relative to the directory containing that YAML file. Explicit `--input` and `--output` override YAML values and are relative to the working directory (absolute paths also work). Without configuration, the default output is `reports/report.json` and the default log is `logs/app.log`, both relative to the working directory.
 
-For example:
+The checked-in configuration uses `../` because it lives in `configs/`. From the repository root, `dataset-analyzer` runs the sample with those defaults.
 
-```bash
-dataset-analyzer --input data/another-dataset.csv
-```
+## Example
 
-uses `data/another-dataset.csv` instead of the input path defined in `config.yaml`.
-
-## Example Input
-
-The example CSV file is located at:
-
-```text
-data/sample.csv
-```
-
-Example:
+Input:
 
 ```csv
 name,age,score
@@ -187,152 +54,27 @@ Bob,21,85
 Charlie,22,95
 ```
 
-## Example Report
-
-After running the analyzer, the generated JSON report may look like this:
+Output:
 
 ```json
 {
-    "rows": 3,
-    "columns": 3,
-    "missing_values": 0,
-    "numeric_summary": {
-        "age": 21.0,
-        "score": 90.0
-    }
+  "rows": 3,
+  "columns": 3,
+  "missing_values": 0,
+  "numeric_summary": {"age": 21.0, "score": 90.0}
 }
 ```
 
-The report contains:
+`numeric_summary` contains means of numeric columns. All-missing or non-finite means become JSON `null`, never nonstandard `NaN` or `Infinity`. Non-numeric columns do not receive a mean. This tool does not infer a schema or certify dataset quality.
 
-- Total number of rows
-- Total number of columns
-- Total number of missing values
-- Mean values for numerical columns
+## Implementation and checks
 
-## Logging
+`src/dataset_analyzer/` separates loading/analysis, configuration, reporting, and CLI orchestration. Tests exercise analysis, installation entry points, execution outside the checkout, configuration-relative paths, failures, new output directories, and strict JSON compatibility. GitHub Actions runs them on pushes and pull requests to `main`.
 
-The project includes a configurable logging system to track the execution process.
+Development dependencies are in `.[dev]`; pytest is not a runtime dependency. Generated logs and reports are ignored. The tracked sample report is an example artifact.
 
-The logging configuration is implemented in:
+Potential extensions: column-level missingness, medians and standard deviations, additional file formats, and visualization.
 
-```text
-src/dataset_analyzer/logging_config.py
-```
+## License
 
-The application records important execution events, including:
-
-- Starting dataset analysis
-- Loading input files
-- Dataset loading status
-- Analysis completion
-- Report generation
-
-Example log messages:
-
-```text
-INFO Starting dataset analysis
-INFO Loading CSV file
-INFO Dataset loaded: 100 rows
-INFO Analysis completed
-INFO Report saved
-```
-
-Logging behavior can be customized through the logging configuration module.
-
-Generated runtime files are excluded from Git version control through `.gitignore`.
-
-## Testing
-
-Run all tests with:
-
-```bash
-pytest
-```
-
-The current test suite checks:
-
-- CSV loading
-- Dataset row and column counts
-- Missing-value analysis
-- CLI help output
-- CLI handling of nonexistent input files
-- Successful command-line execution
-
-Example result:
-
-```text
-============================= test session starts =============================
-collected 4 items
-
-tests/test_analyzer.py ..                                           [ 50%]
-tests/test_cli.py ..                                                [100%]
-
-============================== 4 passed ==============================
-```
-
-## Continuous Integration
-
-The project uses GitHub Actions to run the test suite automatically when:
-
-- Code is pushed to the `main` branch
-- A pull request targets the `main` branch
-
-The workflow configuration is located at:
-
-```text
-.github/workflows/test.yml
-```
-
-The test badge at the top of this README shows the current continuous integration status.
-
-## Development Workflow
-
-A typical development workflow is:
-
-```bash
-git switch -c feature/new-feature
-```
-
-Make and test the changes:
-
-```bash
-pytest
-```
-
-Save the changes:
-
-```bash
-git add .
-git commit -m "add new feature"
-```
-
-Push the branch:
-
-```bash
-git push -u origin feature/new-feature
-```
-
-The branch can then be reviewed and merged into `main` through a GitHub pull request.
-
-## Technologies
-
-- Python
-- pandas
-- PyYAML
-- pytest
-- argparse
-- Git
-- GitHub
-- GitHub Actions
-
-## Future Improvements
-
-- Add column-level missing-value summaries
-- Add median and standard-deviation statistics
-- Support additional file formats
-- Add configurable logging levels
-- Improve exception handling
-- Add data visualization
-- Add test coverage reporting
-- Integrate the analyzer into a larger machine-learning data pipeline
+MIT; see [LICENSE](LICENSE).
